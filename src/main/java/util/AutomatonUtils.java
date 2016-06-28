@@ -3,22 +3,14 @@ package util;
 import automaton.EmptyTrace;
 import automaton.PossibleWorldWrap;
 import automaton.TransitionLabel;
-import formula.ldlf.LDLfFormula;
-import formula.ltlf.LTLfFormula;
-import formula.ltlf.LTLfLocalVar;
 import net.sf.tweety.logics.pl.syntax.Proposition;
 import rationals.Automaton;
 import rationals.NoSuchStateException;
 import rationals.State;
 import rationals.Transition;
-import rationals.transformations.Reducer;
 import synthesis.symbols.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -47,68 +39,10 @@ import java.util.Set;
  */
 public class AutomatonUtils {
 
-	public static Automaton buildLTLfAutomaton(LTLfFormula formula){
-		LDLfFormula ldLfFormula = formula.toLDLf();
-		return new Reducer<>().transform(utils.AutomatonUtils.ldlf2Automaton(ldLfFormula, ldLfFormula.getSignature()));
-	}
 
-	public static Automaton removeUnreachableStates(Automaton original){
+
+	public static Automaton translateToGameAutomaton(Automaton original, PartitionedDomain domain){
 		Automaton res = new Automaton();
-
-		Set<State> initials = original.initials();
-		HashMap<State, State> oldToNewStates = new HashMap<>();
-
-		for (State i : initials){
-			State newI = res.addState(i.isInitial(), i.isTerminal());
-			oldToNewStates.put(i, newI);
-		}
-
-		Set<State> toBeVisited = new HashSet<>();
-		toBeVisited.addAll(initials);
-
-		while (!toBeVisited.isEmpty()){
-			State oldStart = toBeVisited.iterator().next();
-			toBeVisited.remove(oldStart);
-
-			HashSet<State> newTBV = new HashSet<>();
-
-			Set<Transition> oldTransitions = original.delta(oldStart);
-
-			for (Transition oldT : oldTransitions){
-				State oldEnd = oldT.end();
-				State newEnd = oldToNewStates.get(oldEnd);
-
-				if (newEnd == null){
-					newEnd = res.addState(oldEnd.isInitial(), oldEnd.isTerminal());
-					oldToNewStates.put(oldEnd, newEnd);
-					newTBV.add(oldEnd);
-				}
-
-				Transition newT = new Transition(oldToNewStates.get(oldStart), oldT.label(), newEnd);
-
-				try {
-					res.addTransition(newT);
-				} catch (NoSuchStateException e) {
-					e.printStackTrace();
-				}
-			}
-
-			toBeVisited.addAll(newTBV);
-		}
-
-		return res;
-	}
-
-	public static Automaton transalteToGameAutomaton(Automaton original, PartitionedDomain domain){
-		Automaton res = new Automaton();
-
-		//Remove emptyTrace transitions
-		original = utils.AutomatonUtils.eliminateEmptyTrace(original);
-
-		original = removeUnreachableStates(original);
-
-		PropositionSet environment = domain.getEnvironmentDomain();
-		PropositionSet system = domain.getSystemDomain();
 
 		//Get original states iterator
 		Iterator<State> originalStates = original.states().iterator();
@@ -172,33 +106,15 @@ public class AutomatonUtils {
 		return res;
 	}
 
-	public static void writeAutomatonGv(Automaton automaton, String fileName){
-		FileOutputStream fos = null;
-
-		try {
-			fos = new FileOutputStream(fileName);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		PrintStream ps = new PrintStream(fos);
-		ps.println(utils.AutomatonUtils.toDot(automaton));
-		ps.flush();
-		ps.close();
-	}
-
 	private static PartitionedInterpretation partitionPossibleWorld(PossibleWorldWrap pw, PartitionedDomain domain){
 		Interpretation environment = new Interpretation();
 		Interpretation system = new Interpretation();
 
 		for (Proposition p : pw){
-			LTLfLocalVar lv = new LTLfLocalVar(p);
-
-			if (domain.getEnvironmentDomain().contains(lv)){
-				environment.add(lv);
-			} else if (domain.getSystemDomain().contains(lv)) {
-				system.add(lv);
+			if (domain.getEnvironmentDomain().contains(p)){
+				environment.add(p);
+			} else if (domain.getSystemDomain().contains(p)) {
+				system.add(p);
 			} else {
 				throw new RuntimeException("Found propositional variable not declared in domain");
 			}

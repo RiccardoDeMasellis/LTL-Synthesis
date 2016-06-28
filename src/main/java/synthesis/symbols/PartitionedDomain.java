@@ -1,6 +1,7 @@
 package synthesis.symbols;
 
-import formula.ltlf.LTLfLocalVar;
+import net.sf.tweety.logics.pl.syntax.Proposition;
+import net.sf.tweety.logics.pl.syntax.PropositionalSignature;
 
 /**
  * Class that represents the domain partitioned into proposition controlled by the environment and
@@ -28,17 +29,17 @@ import formula.ltlf.LTLfLocalVar;
  */
 public class PartitionedDomain {
 
-	private PropositionSet environmentDomain;
-	private PropositionSet systemDomain;
+	private PropositionalSignature environmentDomain;
+	private PropositionalSignature systemDomain;
 
 	/**
 	 * Instantiates a new PartitionedDomain
 	 * @param environmentDomain the propositions controlled by the environment
 	 * @param systemDomain the propositions controlled by the system
 	 */
-	public PartitionedDomain(PropositionSet environmentDomain, PropositionSet systemDomain){
+	public PartitionedDomain(PropositionalSignature environmentDomain, PropositionalSignature systemDomain){
 
-		for (LTLfLocalVar x : environmentDomain){
+		for (Proposition x : environmentDomain){
 			if (systemDomain.contains(x)){
 				throw new RuntimeException("System and environment domain must be disjoint; " +
 						"Proposition " + x + " appears in both.");
@@ -66,16 +67,16 @@ public class PartitionedDomain {
 
 	@Override
 	public String toString(){
-		return "Environment: " + this.environmentDomain.toString() +
-						"; System: " + this.systemDomain.toString();
+		return "Env: " + this.environmentDomain.toString() +
+						"; Sys: " + this.systemDomain.toString();
 	}
 
 	/**
 	 * Retrieves the union of the system and environment partitions
 	 * @return a PropositionSet containing all the proposition in the domain
 	 */
-	public PropositionSet getCompleteDomain(){
-		PropositionSet res = new PropositionSet();
+	public PropositionalSignature getCompleteDomain(){
+		PropositionalSignature res = new PropositionalSignature();
 		res.addAll(this.environmentDomain);
 		res.addAll(this.systemDomain);
 		return res;
@@ -85,7 +86,7 @@ public class PartitionedDomain {
 	 * Retrieves the propositions of the domain controlled by the environment
 	 * @return a PropositionSet containing the propositions controlled by the environment
 	 */
-	public PropositionSet getEnvironmentDomain(){
+	public PropositionalSignature getEnvironmentDomain(){
 		return environmentDomain;
 	}
 
@@ -93,7 +94,7 @@ public class PartitionedDomain {
 	 * Retrieves the propositions of the domain controlled by the system
 	 * @return a PropositionSet containing the propositions controlled by the system
 	 */
-	public PropositionSet getSystemDomain(){
+	public PropositionalSignature getSystemDomain(){
 		return systemDomain;
 	}
 }

@@ -1,12 +1,11 @@
 package synthesis;
 
-import formula.ltlf.LTLfLocalVar;
+import net.sf.tweety.logics.pl.syntax.Proposition;
 import rationals.Automaton;
 import rationals.State;
 import synthesis.maps.OutputFunction;
 import synthesis.symbols.*;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -112,7 +111,7 @@ public class StrategyGenerator {
 				Interpretation environmentMove = (Interpretation) environmentInput;
 
 				//Input sanity checks
-				for (LTLfLocalVar v : environmentMove){
+				for (Proposition v : environmentMove){
 					if (this.domain.getSystemDomain().contains(v)){
 						throw new RuntimeException("Proposition " + v + " is part of the system domain!");
 					} else if (!this.domain.getEnvironmentDomain().contains(v)){

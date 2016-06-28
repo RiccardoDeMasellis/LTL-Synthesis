@@ -1,6 +1,6 @@
 package synthesis.symbols;
 
-import formula.ltlf.LTLfLocalVar;
+import formula.LocalVar;
 
 import java.util.HashSet;
 
@@ -28,7 +28,7 @@ import java.util.HashSet;
  * You should have received a copy of the GNU General Public License
  * along with LTL-Synthesis. If not, see <http://www.gnu.org/licenses/>.
  */
-public class PropositionSet extends HashSet<LTLfLocalVar> {
+public class PropositionSet extends HashSet<LocalVar> {
 	@Override
 	public String toString(){
 		return super.toString();

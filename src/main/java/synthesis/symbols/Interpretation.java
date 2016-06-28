@@ -1,5 +1,7 @@
 package synthesis.symbols;
 
+import net.sf.tweety.logics.pl.syntax.PropositionalSignature;
+
 /**
  * PropositionalInterpretation
  * Represents a propositional interpretations. It contains the propositions considered true.
@@ -25,5 +27,5 @@ package synthesis.symbols;
  * You should have received a copy of the GNU General Public License
  * along with LTL-Synthesis. If not, see <http://www.gnu.org/licenses/>.
  */
-public class Interpretation extends PropositionSet implements SynthTraceInput, StrategyOutput {
+public class Interpretation extends PropositionalSignature implements SynthTraceInput, StrategyOutput {
 }

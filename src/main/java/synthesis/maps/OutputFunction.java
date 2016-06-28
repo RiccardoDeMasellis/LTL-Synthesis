@@ -2,7 +2,6 @@ package synthesis.maps;
 
 import rationals.State;
 import synthesis.symbols.Interpretation;
-import synthesis.symbols.PropositionSet;
 
 import java.util.HashMap;
 import java.util.HashSet;

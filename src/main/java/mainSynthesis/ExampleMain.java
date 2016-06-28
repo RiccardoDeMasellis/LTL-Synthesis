@@ -1,12 +1,11 @@
-package main;
+package mainSynthesis;
 
-import formula.ltlf.LTLfFormula;
-import formula.ltlf.LTLfLocalVar;
+import net.sf.tweety.logics.pl.syntax.Proposition;
+import net.sf.tweety.logics.pl.syntax.PropositionalSignature;
 import synthesis.StrategyGenerator;
 import synthesis.SynthesisAutomaton;
-import synthesis.symbols.*;
-
-import static util.ParsingUtils.*;
+import synthesis.symbols.PartitionedDomain;
+import utils.AutomatonUtils;
 
 /**
  * ExampleMain
@@ -43,15 +42,22 @@ public class ExampleMain {
 		//https://github.com/RiccardoDeMasellis/FLLOAT/blob/master/grammars/LTLfFormulaParser.g4
 		//https://github.com/RiccardoDeMasellis/FLLOAT/blob/master/grammars/PropFormulaParser.g4
 
-		LTLfFormula specification;
-		specification = parseLTLfFormula("(G a) U (X b)");
+		/*
+		LTLf
+		 */
+		//String ltlfSpecification = "(G a) U (X b)";
+
+        /*
+        LDLf
+         */
+        String ldlfSpecification = "[a]tt && <true>b";
 
 		//Next, you must declare the domain of the formula, specifying the partition between proposition controlled
 		//by the environment and those controlled by the system.
-		PropositionSet environment = new PropositionSet();
-		PropositionSet system = new PropositionSet();
-		environment.add(new LTLfLocalVar("a"));
-		system.add(new LTLfLocalVar("b"));
+        PropositionalSignature environment = new PropositionalSignature();
+		PropositionalSignature system = new PropositionalSignature();
+        environment.add(new Proposition("a"));
+		system.add(new Proposition("b"));
 
 		PartitionedDomain partitionedDomain = new PartitionedDomain(environment, system);
 
@@ -60,7 +66,21 @@ public class ExampleMain {
 		//And will output its solution (if it exists).
 		//BEWARE: if the specification is big, this operations may require some time,
 		// as all the most intensive operations are performed here
-		SynthesisAutomaton sa = new SynthesisAutomaton(partitionedDomain, specification);
+		SynthesisAutomaton sa = new SynthesisAutomaton(partitionedDomain, ldlfSpecification, true);
+
+
+        /*
+		LDLf
+		 */
+//		String ldlfSpecification = "[a]ff";
+//        PropositionalSignature environment = new PropositionalSignature();
+//        PropositionalSignature system = new PropositionalSignature();
+//        environment.add(new LDLfLocalVar("a"));
+//        system.add(new LDLfLocalVar("b"));
+//
+//
+//        PartitionedDomain partitionedDomain = new PartitionedDomain(environment, system);
+
 
 		//To know if the problem has a solution, you can call this method.
 		System.out.println("Is realizable? " + sa.isRealizable());
@@ -69,9 +89,11 @@ public class ExampleMain {
 		//Note that it returns null if the problem cannot be solved
 		StrategyGenerator stg = sa.getStrategyGenerator();
 
+        AutomatonUtils.printAutomaton(stg.getAutomaton(), "strategyGenerator.gv");
+
+        /*
 		//Now you can start playing the game.
 		//First of all, call this method to obtain the first action the system should perform.
-
 		StrategyOutput systemAction = stg.getFirstMove();
 		Interpretation environmentAction;
 
@@ -87,7 +109,7 @@ public class ExampleMain {
 			//As before, you will receive the interpretation over the system-controlled propositions to be used in the
 			//next turn, or a StrategySuccessOutput if the game is won.
 			environmentAction = new Interpretation();
-			environmentAction.add(new LTLfLocalVar("a"));
+			environmentAction.add(new Proposition("a"));
 
 			systemAction = stg.step(environmentAction);
 
@@ -109,5 +131,6 @@ public class ExampleMain {
 				}
 			}
 		}
+		*/
 	}
 }

@@ -1,6 +1,6 @@
 package synthesis.symbols;
 
-import formula.ltlf.LTLfLocalVar;
+import net.sf.tweety.logics.pl.syntax.Proposition;
 
 /**
  * PartitionedInterpretation
@@ -39,7 +39,7 @@ public class PartitionedInterpretation implements SynthTransitionLabel {
 	 * @param systemInterpretation the interpretation over the propositions controlled by the system
 	 */
 	public PartitionedInterpretation(Interpretation environmentInterpretation, Interpretation systemInterpretation){
-		for (LTLfLocalVar x : environmentInterpretation){
+		for (Proposition x : environmentInterpretation){
 			if (systemInterpretation.contains(x)){
 				throw new RuntimeException("System and environment interpretations must be disjoint; " +
 						"Proposition " + x + " appears in both.");
@@ -67,8 +67,8 @@ public class PartitionedInterpretation implements SynthTransitionLabel {
 
 	@Override
 	public String toString(){
-		return "Environment: " + this.environmentInterpretation.toString() +
-				"; System: " + this.systemInterpretation.toString();
+		return "Env: " + this.environmentInterpretation.toString() +
+				"; Sys: " + this.systemInterpretation.toString();
 	}
 
 	/**

@@ -1,7 +1,8 @@
 package synthesis;
 
-import formula.ltlf.LTLfFormula;
-import formula.ltlf.LTLfLocalVar;
+import formula.ldlf.LDLfFormula;
+import main.AutomatonResultWrapper;
+import main.Main;
 import net.sf.tweety.logics.pl.syntax.Proposition;
 import net.sf.tweety.logics.pl.syntax.PropositionalSignature;
 import rationals.Automaton;
@@ -57,21 +58,33 @@ public class SynthesisAutomaton {
 	/**
 	 * Instantiates a new SynthesisAutomaton.
 	 * @param domain the domain of the problem, partitioned in propositions controlled by the environment and by the system
-	 * @param formula the LTL formula that serves as specification for the synthesis problem
+	 * @param input the formula that serves as specification for the synthesis problem
+	 * @param isLDLf is true if the input is a LDLf formula, false if it is LTLf.
 	 */
-	public SynthesisAutomaton(PartitionedDomain domain, LTLfFormula formula){
+	public SynthesisAutomaton(PartitionedDomain domain, String input, boolean isLDLf){
 		this.domain = domain;
 
-		PropositionalSignature ps = formula.getSignature();
-		for (Proposition p : ps){
-			LTLfLocalVar lv = new LTLfLocalVar(p);
-			if (!this.domain.getCompleteDomain().contains(lv)){
-				throw new RuntimeException("Unkown proposition " + lv);
-			}
-		}
+        LDLfFormula formula;
 
-		Automaton tmp = buildLTLfAutomaton(formula);
-		this.automaton = transalteToGameAutomaton(tmp, domain);
+        //LDLf
+		if (isLDLf)
+            formula = utils.ParserUtils.parseLDLfFormula(input);
+        //LTLf
+        else
+            formula = utils.ParserUtils.parseLTLfFormula(input).toLDLf();
+
+		PropositionalSignature ps = formula.getSignature();
+        for (Proposition p : ps) {
+            if (!domain.getCompleteDomain().contains(p))
+                throw new RuntimeException("Each proposition must belong either to the system or to the environment!");
+        }
+
+		// Call to FLLOAT
+		AutomatonResultWrapper arw = Main.ldlfFormula2Aut(formula, domain.getCompleteDomain(), false, true, false, true, false);
+
+        Automaton tmp = arw.getAutomaton();
+
+		this.automaton = translateToGameAutomaton(tmp, domain);
 
 		this.computeTransitionMaps();
 
