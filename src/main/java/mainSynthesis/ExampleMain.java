@@ -33,40 +33,40 @@ import utils.AutomatonUtils;
  */
 public class ExampleMain {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		//First of all, the specification formula must be declared.
-		//Formula parsing and representation is handled by the FLLOAT library:
-		//https://github.com/RiccardoDeMasellis/FLLOAT
-		//For the complete grammar, please read these files:
-		//https://github.com/RiccardoDeMasellis/FLLOAT/blob/master/grammars/LTLfFormulaParser.g4
-		//https://github.com/RiccardoDeMasellis/FLLOAT/blob/master/grammars/PropFormulaParser.g4
+        //First of all, the specification formula must be declared.
+        //Formula parsing and representation is handled by the FLLOAT library:
+        //https://github.com/RiccardoDeMasellis/FLLOAT
+        //For the complete grammar, please read these files:
+        //https://github.com/RiccardoDeMasellis/FLLOAT/blob/master/grammars/LTLfFormulaParser.g4
+        //https://github.com/RiccardoDeMasellis/FLLOAT/blob/master/grammars/PropFormulaParser.g4
 
 		/*
 		LTLf
 		 */
-		//String ltlfSpecification = "(G a) U (X b)";
+        //String ltlfSpecification = "(G a) U (X b)";
 
         /*
         LDLf
          */
         String ldlfSpecification = "[a]tt && <true>b";
 
-		//Next, you must declare the domain of the formula, specifying the partition between proposition controlled
-		//by the environment and those controlled by the system.
+        //Next, you must declare the domain of the formula, specifying the partition between proposition controlled
+        //by the environment and those controlled by the system.
         PropositionalSignature environment = new PropositionalSignature();
-		PropositionalSignature system = new PropositionalSignature();
+        PropositionalSignature system = new PropositionalSignature();
         environment.add(new Proposition("a"));
-		system.add(new Proposition("b"));
+        system.add(new Proposition("b"));
 
-		PartitionedDomain partitionedDomain = new PartitionedDomain(environment, system);
+        PartitionedDomain partitionedDomain = new PartitionedDomain(environment, system);
 
-		//Now, the SynthesisAutomaton must be instantiated;
-		//This class will handle the computations required to solve the synthesis problem,
-		//And will output its solution (if it exists).
-		//BEWARE: if the specification is big, this operations may require some time,
-		// as all the most intensive operations are performed here
-		SynthesisAutomaton sa = new SynthesisAutomaton(partitionedDomain, ldlfSpecification, true);
+        //Now, the SynthesisAutomaton must be instantiated;
+        //This class will handle the computations required to solve the synthesis problem,
+        //And will output its solution (if it exists).
+        //BEWARE: if the specification is big, this operations may require some time,
+        // as all the most intensive operations are performed here
+        SynthesisAutomaton sa = new SynthesisAutomaton(partitionedDomain, ldlfSpecification, true);
 
 
         /*
@@ -82,12 +82,12 @@ public class ExampleMain {
 //        PartitionedDomain partitionedDomain = new PartitionedDomain(environment, system);
 
 
-		//To know if the problem has a solution, you can call this method.
-		System.out.println("Is realizable? " + sa.isRealizable());
+        //To know if the problem has a solution, you can call this method.
+        System.out.println("Is realizable? " + sa.isRealizable());
 
-		//If a solution exists, you can obtain it by calling this method
-		//Note that it returns null if the problem cannot be solved
-		StrategyGenerator stg = sa.getStrategyGenerator();
+        //If a solution exists, you can obtain it by calling this method
+        //Note that it returns null if the problem cannot be solved
+        StrategyGenerator stg = sa.getStrategyGenerator();
 
         AutomatonUtils.printAutomaton(stg.getAutomaton(), "strategyGenerator.gv");
 
@@ -132,5 +132,5 @@ public class ExampleMain {
 			}
 		}
 		*/
-	}
+    }
 }
