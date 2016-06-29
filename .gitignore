@@ -10,3 +10,4 @@ buildNumber.properties
 *.gv
 *.iml
 src/test/
+/src/main/java/mainSynthesis/ExampleMain.java
