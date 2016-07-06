@@ -55,6 +55,13 @@ public class SynthesisAutomaton {
 	private HashSet<State> winningStates;
 	private boolean realizable;
 
+	/*
+	Needed for synthesis under partial observability
+	 */
+	public SynthesisAutomaton(PartitionedDomain domain, Automaton automaton) {
+        this.constructorAux(domain, automaton);
+    }
+
 	/**
 	 * Instantiates a new SynthesisAutomaton.
 	 * @param domain the domain of the problem, partitioned in propositions controlled by the environment and by the system
@@ -82,14 +89,16 @@ public class SynthesisAutomaton {
 		// Call to FLLOAT
 		AutomatonResultWrapper arw = Main.ldlfFormula2Aut(formula, domain.getCompleteDomain(), false, true, false, true, false);
 
-        Automaton tmp = arw.getAutomaton();
-
-		this.automaton = translateToGameAutomaton(tmp, domain);
-
-		this.computeTransitionMaps();
-
-		this.realizable = this.computeRealizability();
+        this.constructorAux(domain, arw.getAutomaton());
 	}
+
+    private void constructorAux(PartitionedDomain domain, Automaton automaton) {
+        this.domain = domain;
+        this.automaton = translateToGameAutomaton(automaton, domain);
+        this.computeTransitionMaps();
+        this.realizable = this.computeRealizability();
+    }
+
 
 	/**
 	 * Returns the solutions (if they exist) for the current problem
